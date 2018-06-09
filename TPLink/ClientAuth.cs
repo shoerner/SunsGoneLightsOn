@@ -6,7 +6,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace ClientAuth
+namespace TPLink
 {
     public class ClientAuthenticationEngine
     {

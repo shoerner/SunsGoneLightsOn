@@ -5,91 +5,93 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-public sealed class APICommunicationBase
+namespace TPLink
 {
-    private static readonly APICommunicationBase instance = new APICommunicationBase();
-    private static readonly HttpClient _client = new HttpClient()
+    public sealed class APICommunicationBase
     {
-        BaseAddress = new Uri("https://wap.tplinkcloud.com"),
-    };
-
-    private static string _AuthenticationToken;
-
-    public static string AuthenticationToken
-    {
-        get
+        private static readonly APICommunicationBase instance = new APICommunicationBase();
+        private static readonly HttpClient _client = new HttpClient()
         {
-            if (String.IsNullOrEmpty(_AuthenticationToken))
+            BaseAddress = new Uri("https://wap.tplinkcloud.com"),
+        };
+
+        private static string _AuthenticationToken;
+
+        public static string AuthenticationToken
+        {
+            get
             {
-                GetAuthenticationToken().GetAwaiter().GetResult();
+                if (String.IsNullOrEmpty(_AuthenticationToken))
+                {
+                    GetAuthenticationToken().GetAwaiter().GetResult();
+                }
+
+                return _AuthenticationToken;
             }
-
-            return _AuthenticationToken;
         }
-    }
 
-    static APICommunicationBase() { }
+        static APICommunicationBase() { }
 
-    private APICommunicationBase() { }
+        private APICommunicationBase() { }
 
-    public static APICommunicationBase Instance
-    {
-        get
+        public static APICommunicationBase Instance
         {
-            return instance;
-        }
-    }
-
-    public static async Task<string> MakePostRequest(object requestBody, string requestUri = "")
-    {
-        HttpResponseMessage response = await _client.PostAsJsonAsync(requestUri, requestBody);
-
-        if (response.IsSuccessStatusCode)
-            return await response.Content.ReadAsStringAsync();
-
-        throw new IOException($"Failed to generate HTTP POST against {requestUri}");
-    }
-
-    public static async Task<string> GetAuthenticationToken()
-    {
-        string response = await MakePostRequest(
-            new APIRequestParams<APIAuthenticationRequest>
+            get
             {
-                method = "login",
-                requestParams = BuildBaseRequestParams(),
+                return instance;
             }
-        );
+        }
 
-        string token = (JsonConvert.DeserializeObject<APIResponse<APIAuthenticationResponse>>(response)).result.token;
-        _AuthenticationToken = token;
-        return token;
-    }
-    private static APIAuthenticationRequest BuildBaseRequestParams()
-    {
-        using (StreamReader reader = new StreamReader("./Settings.json"))
+        public static async Task<string> MakePostRequest(object requestBody, string requestUri = "")
         {
-            string rawJson = reader.ReadToEnd();
-            return JsonConvert.DeserializeObject<APIAuthenticationRequest>(rawJson);
+            HttpResponseMessage response = await _client.PostAsJsonAsync(requestUri, requestBody);
+
+            if (response.IsSuccessStatusCode)
+                return await response.Content.ReadAsStringAsync();
+
+            throw new IOException($"Failed to generate HTTP POST against {requestUri}");
+        }
+
+        public static async Task<string> GetAuthenticationToken()
+        {
+            string response = await MakePostRequest(
+                new APIRequestParams<APIAuthenticationRequest>
+                {
+                    method = "login",
+                    requestParams = BuildBaseRequestParams(),
+                }
+            );
+
+            string token = (JsonConvert.DeserializeObject<APIResponse<APIAuthenticationResponse>>(response)).result.token;
+            _AuthenticationToken = token;
+            return token;
+        }
+        private static APIAuthenticationRequest BuildBaseRequestParams()
+        {
+            using (StreamReader reader = new StreamReader("./Settings.json"))
+            {
+                string rawJson = reader.ReadToEnd();
+                return JsonConvert.DeserializeObject<APIAuthenticationRequest>(rawJson);
+            }
+        }
+
+        private class APIAuthenticationRequest
+        {
+            public string appType { get { return "Kasa_Fake"; } }
+
+            public string cloudUserName { get; set; }
+
+            public string cloudPassword { get; set; }
+
+            public string terminalUUID { get; set; }
+        }
+
+        private class APIAuthenticationResponse
+        {
+            public string accountId { get; set; }
+            public string email { get; set; }
+            public DateTime regTime { get; set; }
+            public string token { get; set; }
         }
     }
-
-    private class APIAuthenticationRequest
-    {
-        public string appType { get { return "Kasa_Fake"; } }
-
-        public string cloudUserName { get; set; }
-
-        public string cloudPassword { get; set; }
-
-        public string terminalUUID { get; set; }
-    }
-
-    private class APIAuthenticationResponse
-    {
-        public string accountId { get; set; }
-        public string email { get; set; }
-        public DateTime regTime { get; set; }
-        public string token { get; set; }
-    }
-
 }
