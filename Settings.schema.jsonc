@@ -1,0 +1,20 @@
+/**
+THE BASE FILE `Settings.schema` HAS BEEN EXPLICITLY IGNORED FOR IMPORT.
+
+You must create your own.
+*/
+
+{
+    /**
+        UUID that will be utilized to communicate to TPLink servers
+    */
+    "terminalUUID": "string",
+    /**
+        Username for TPLink
+    */
+    "cloudUserName": "string",
+    /**
+        Password for TPLink
+    */
+    "cloudPassword": "string"
+}
