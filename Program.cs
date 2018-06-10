@@ -1,5 +1,7 @@
 ﻿using System;
-using ClientAuth;
+using System.Collections.Generic;
+using System.Threading;
+using TPLink;
 
 namespace SunsGoneLightsOn
 {
@@ -16,7 +18,12 @@ namespace SunsGoneLightsOn
             ClientAuthenticationEngine authEngine = new ClientAuthenticationEngine();
             authEngine.GetAuthenticationToken();
 
-            DeviceList.getDeviceList();
+            List<APIDevice> devices = DeviceList.getDeviceList();
+            var deviceCommunication = new DeviceCommunicationBase(devices[0]);
+            deviceCommunication.SetRelayState(true).GetAwaiter().GetResult();
+
+            Thread.Sleep(5000);
+            deviceCommunication.SetRelayState(false).GetAwaiter().GetResult();
         }
     }
 }

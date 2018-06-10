@@ -12,7 +12,7 @@ namespace TPLink
 {
     public static class DeviceList
     {
-        public static Object getDeviceList()
+        public static List<APIDevice> getDeviceList()
         {
             return getAsyncDeviceList().GetAwaiter().GetResult();
         }
@@ -40,9 +40,9 @@ namespace TPLink
     public class APIDevice
     {
         public string alias { get; set; }
-        public string appServerUrl { get; set; }
+        public Uri appServerUrl { get; set; }
         public string deviceHwVer { get; set; }
-        public string devuceId { get; set; }
+        public string deviceId { get; set; }
         public string deviceMac { get; set; }
         public string deviceModel { get; set; }
         public string deviceName { get; set; }
