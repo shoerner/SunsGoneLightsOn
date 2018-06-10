@@ -57,6 +57,7 @@ namespace ApplicationSettings
 
             RunningSettings = new ISettings
             {
+                ClockSkew = TimeSpan.Zero.ToString(),
                 CloudPassword = password,
                 CloudUserName = username,
                 LocalLatitude = localLatitude,

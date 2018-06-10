@@ -2,6 +2,9 @@ using Newtonsoft.Json;
 
 public class ISettings
 {
+    [JsonProperty("clockSkew")]
+    public string ClockSkew { get; set; }
+
     [JsonProperty("cloudUserName")]
     public string CloudUserName { get; set; }
 

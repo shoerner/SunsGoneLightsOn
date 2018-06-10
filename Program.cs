@@ -37,7 +37,7 @@ namespace SunsGoneLightsOn
             ClientAuthenticationEngine authEngine = new ClientAuthenticationEngine();
             List<APIDevice> devices = DeviceList.getDeviceList();
 
-            var startTime = GetNextRun();
+            var startTime = SunriseSunset.SunsetUtils.GetNextRun();
 
             while (true)
             {
@@ -51,23 +51,8 @@ namespace SunsGoneLightsOn
                 var deviceCommunication = new DeviceCommunicationBase(devices[0]);
                 deviceCommunication.SetRelayState(true).GetAwaiter().GetResult();
 
-                startTime = GetNextRun();
+                startTime = SunriseSunset.SunsetUtils.GetNextRun();
             }
-        }
-
-        /// <summary>
-        /// Using the current application settings, this will return the ETA to the next sunset
-        /// </summary>
-        /// <returns>TimeSpan until next sunset</returns>
-        private TimeSpan GetNextRun()
-        {
-            var nextRun = SunriseSunset.SunriseSunset.getSunset();
-            var now = DateTime.UtcNow;
-            var ttl = nextRun.Subtract(now);
-            Console.WriteLine($"Next sunset: {nextRun.ToLocalTime()}");
-            Console.WriteLine($"Now: {now.ToLocalTime()}");
-            Console.WriteLine($"Time to next iteration: {ttl}");
-            return ttl;
         }
     }
 }
