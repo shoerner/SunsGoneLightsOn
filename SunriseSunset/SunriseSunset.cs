@@ -15,12 +15,8 @@ namespace SunriseSunset
 
         private SunriseSunset()
         {
-            using (StreamReader reader = new StreamReader("./Settings.json"))
-            {
-                string rawJson = reader.ReadToEnd();
-                var location = JsonConvert.DeserializeObject<LocationConfiguration>(rawJson);
-                targetLocation = new Coordinate(location.localLatitude, location.localLongitude, DateTime.UtcNow.AddDays(1));
-            }
+            var settings = ApplicationSettings.Settings.RunningSettings;
+            targetLocation = new Coordinate(settings.LocalLatitude, settings.LocalLongitude, DateTime.UtcNow.AddDays(1));
         }
 
         public static SunriseSunset Instance

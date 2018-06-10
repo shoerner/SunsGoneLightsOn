@@ -71,15 +71,18 @@ namespace TPLink
             string token = (JsonConvert.DeserializeObject<APIResponse<APIAuthenticationResponse>>(response)).result.token;
             _AuthenticationToken = token;
             _TokenGenerateDate = DateTime.UtcNow;
+
             return token;
         }
         private static APIAuthenticationRequest BuildBaseRequestParams()
         {
-            using (StreamReader reader = new StreamReader("./Settings.json"))
-            {
-                string rawJson = reader.ReadToEnd();
-                return JsonConvert.DeserializeObject<APIAuthenticationRequest>(rawJson);
-            }
+            var settings = ApplicationSettings.Settings.RunningSettings;
+
+            return new APIAuthenticationRequest {
+                cloudPassword = settings.CloudPassword,
+                cloudUserName = settings.CloudUserName,
+                terminalUUID = settings.TerminalUUID,
+            };
         }
 
         private class APIAuthenticationRequest
