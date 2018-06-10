@@ -6,15 +6,27 @@ You must create your own.
 
 {
     /**
-        UUID that will be utilized to communicate to TPLink servers
+        UUIDv4 that will be utilized to communicate to TPLink servers
     */
     "terminalUUID": "string",
+
     /**
-        Username for TPLink
+        Username for TPLink (eg: "author@noreply.github.com")
     */
     "cloudUserName": "string",
+
     /**
-        Password for TPLink
+        Password for TPLink (eg: "InsecurePAssword")
     */
-    "cloudPassword": "string"
+    "cloudPassword": "string",
+
+    /**
+        Latitude of the location that you want to use for time calculation
+    */
+    "localLatitude": "double",
+
+    /**
+        Longitude of the location that you want to use for time calculation
+    */
+    "localLongitude": "double",
 }

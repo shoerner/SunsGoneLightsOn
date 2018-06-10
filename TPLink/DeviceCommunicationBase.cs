@@ -24,7 +24,7 @@ namespace TPLink
             };
         }
 
-        public async Task<object> SetRelayState(bool relayEnabled)
+        public async Task<int> SetRelayState(bool relayEnabled)
         {
 
             string response = await MakePostRequest(
@@ -47,9 +47,16 @@ namespace TPLink
                     },
                 }
             );
+            
+            var responseState = JsonConvert.DeserializeObject<RelayRequestData>(
+                (JsonConvert.DeserializeObject<APIResponse<ResponseRelayStateChange>>(response)).result.responseData
+            ).system.set_relay_state.err_code;
 
-            object token = JsonConvert.DeserializeObject(response);
-            return token;
+            if(responseState != null && responseState.Value != 0) {
+                throw new Exception($"Failed to manipulate relay state on device {device.alias}");
+            }
+
+            return responseState ?? 0;
         }
 
         private async Task<string> MakePostRequest(object requestBody)
@@ -65,7 +72,26 @@ namespace TPLink
         private class RequestRelayStateChange
         {
             public string deviceId { get; set; }
+
+            /// <summary>
+            /// TPLink's API requires this object to be fully serialized prior to making 
+            /// the request. The serialzied object should be of type RelayRequestData.
+            /// </summary>
             public string requestData { get; set; }
+        }
+
+        private class ResponseRelayStateChange
+        {
+            /// <summary>
+            /// Just like RequestRelayStateChange.requestData, this object is serialized
+            /// JSON. And just like when I found out that little fact, I still have no 
+            /// idea _why_.
+            /// </summary>
+            /// <remarks>
+            /// This response will map down the same way as request. Only the response will
+            /// have err_code defined in place of state.
+            /// </remarks>
+            public string responseData { get; set; }
         }
 
         private class RelayRequestData
@@ -81,6 +107,7 @@ namespace TPLink
         private class RelaySetState
         {
             public int? state { get; set; }
+            public int? err_code { get; set; }
         }
     }
 }

@@ -17,12 +17,18 @@ namespace TPLink
 
         private static string _AuthenticationToken;
 
+        private static DateTime? _TokenGenerateDate;
+
         public static string AuthenticationToken
         {
             get
             {
-                if (String.IsNullOrEmpty(_AuthenticationToken))
+                var generateDateComparison = (_TokenGenerateDate ?? new DateTime()).AddHours(4).CompareTo(DateTime.UtcNow) <= 0;
+                if (String.IsNullOrEmpty(_AuthenticationToken) || generateDateComparison)
                 {
+                    if(generateDateComparison && _TokenGenerateDate != null) {
+                        Console.WriteLine("Generation of token was greater than four hours ago. New token forced.");
+                    }
                     GetAuthenticationToken().GetAwaiter().GetResult();
                 }
 
@@ -64,6 +70,7 @@ namespace TPLink
 
             string token = (JsonConvert.DeserializeObject<APIResponse<APIAuthenticationResponse>>(response)).result.token;
             _AuthenticationToken = token;
+            _TokenGenerateDate = DateTime.UtcNow;
             return token;
         }
         private static APIAuthenticationRequest BuildBaseRequestParams()
