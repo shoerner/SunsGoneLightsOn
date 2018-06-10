@@ -6,6 +6,11 @@ You must create your own.
 
 {
     /**
+        TimeSpan object to skew when the relay will be fired (eg: "-0.00:30:00")
+    */
+    "clockSkew": "string",
+
+    /**
         UUIDv4 that will be utilized to communicate to TPLink servers
     */
     "terminalUUID": "string",
